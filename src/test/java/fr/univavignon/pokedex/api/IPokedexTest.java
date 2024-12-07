@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -70,4 +71,13 @@ public class IPokedexTest {
         assertNotNull(sortedPokemons);
         assertEquals(aquali, sortedPokemons.get(0));
     }
+
+    @Test
+    void testGetPokemons_EmptyList() {
+        when(pokedex.getPokemons()).thenReturn(Collections.emptyList());
+        List<Pokemon> pokemons = pokedex.getPokemons();
+        assertNotNull(pokemons);
+        assertTrue(pokemons.isEmpty());
+    }
+
 }
