@@ -1,5 +1,73 @@
 # UCE Génie Logiciel Avancé : Techniques de tests
 
+
+
+# Projet CERI M1 - Techniques de Test
+
+**Nom :** Nadjim AIT MEDDOUR  
+**Groupe :** CERI-M1 IA 
+
+---
+
+## Badges
+
+![CircleCI](https://circleci.com/gh/NadjimAITMEDDOUR/ceri-m1-techniques-de-test.svg?style=shield)  
+![Coverage](https://codecov.io/gh/NadjimAITMEDDOUR/ceri-m1-techniques-de-test/branch/master/graph/badge.svg)
+
+---
+
+## Description
+
+Ce projet illustre l'application des techniques de tests à un projet logiciel. Il inclut la mise en place d'une API simulant les fonctionnalités d'un Pokedex. 
+
+### Choix techniques d’implémentation
+
+1. **Tests unitaires et d'intégration** : Utilisation de JUnit 5 pour assurer la fiabilité du code.
+2. **Mocking** : Employé pour simuler des dépendances complexes et tester en isolation.
+3. **Intégration continue** : CircleCI est configuré pour exécuter automatiquement les builds et les tests.
+4. **Analyse de couverture** : Codecov est utilisé pour mesurer et visualiser la couverture de tests.
+
+---
+
+## Fonctionnalités principales
+
+- **Gestion de Pokedex** : Ajout, tri et récupération de Pokémon.
+- **Support pour les entraîneurs** : Création et gestion de profils d'entraîneurs Pokémon.
+- **Structure modulaire** : Le projet est structuré pour une extensibilité et une maintenance aisée.
+
+---
+
+## Instructions
+
+1. Clonez le projet :  
+   ```bash
+   git clone https://github.com/NadjimAITMEDDOUR/ceri-m1-techniques-de-test.git
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Introduction
 
 Vous allez à travers ces projet mettre en application une partie des aspects évoqués en cours vis à vis des techniques de tests.  
