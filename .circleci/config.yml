@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  test-java:
+  test-java:  # Conserver le nom 'test-java'
     docker:
       - image: cimg/openjdk:11.0  # Utilisez cimg/openjdk:8.0 si Java 8 est nécessaire
     steps:
@@ -35,14 +35,14 @@ jobs:
 workflows:
   build-and-upload:
     jobs:
-      - build:
+      - test-java:  # Référence le job 'test-java'
           filters:
             branches:
               only:
                 - master
       - upload-to-codecov:
           requires:
-            - build
+            - test-java
           filters:
             branches:
               only:
