@@ -27,7 +27,7 @@ jobs:
 
       # Publish the JaCoCo report to Codecov
       - run:
-          name: Upload coverage to Codecov
+          name: upload-to-codecov
           command: |
             curl -s https://codecov.io/bash > /tmp/codecov
             bash /tmp/codecov
