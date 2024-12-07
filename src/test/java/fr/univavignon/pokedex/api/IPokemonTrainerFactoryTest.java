@@ -30,6 +30,13 @@ public class IPokemonTrainerFactoryTest {
         doThrow(new NullPointerException("Team cannot be null"))
                 .when(pokemonTrainerFactory)
                 .createTrainer(anyString(), isNull(), any(IPokedexFactory.class));
+        doThrow(new IllegalArgumentException("Name cannot be null or empty"))
+                .when(pokemonTrainerFactory)
+                .createTrainer(isNull(), any(Team.class), any(IPokedexFactory.class));
+
+        doThrow(new IllegalArgumentException("Name cannot be null or empty"))
+                .when(pokemonTrainerFactory)
+                .createTrainer(eq(""), any(Team.class), any(IPokedexFactory.class));
     }
 
     @Test
@@ -61,4 +68,19 @@ public class IPokemonTrainerFactoryTest {
             pokemonTrainerFactory.createTrainer("Brock", null, pokedexFactory);
         });
     }
+
+    @Test
+    void testCreateTrainer_NullName() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            pokemonTrainerFactory.createTrainer(null, Team.INSTINCT, pokedexFactory);
+        });
+    }
+
+    @Test
+    void testCreateTrainer_EmptyName() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            pokemonTrainerFactory.createTrainer("", Team.INSTINCT, pokedexFactory);
+        });
+    }
+
 }

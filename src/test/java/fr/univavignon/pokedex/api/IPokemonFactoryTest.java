@@ -36,4 +36,15 @@ public class IPokemonFactoryTest {
         assertEquals("Aquali", aquali.getName());
         assertEquals(2729, aquali.getCp());
     }
+
+    @Test
+    void testCreatePokemon_InvalidData() {
+        when(pokemonFactory.createPokemon(anyInt(), anyInt(), anyInt(), anyInt(), anyInt()))
+                .thenThrow(new IllegalArgumentException("Invalid data"));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            pokemonFactory.createPokemon(-1, -100, -50, -4000, -1);
+        });
+    }
+
 }

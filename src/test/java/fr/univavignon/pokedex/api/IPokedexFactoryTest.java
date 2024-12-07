@@ -25,4 +25,19 @@ public class IPokedexFactoryTest {
         assertNotNull(createdPokedex);
         assertEquals(pokedex, createdPokedex);
     }
+
+    @Test
+    void testCreatePokedex_NullArguments() {
+        // Simule un comportement explicite si la méthode est appelée avec des arguments nuls
+        doThrow(new NullPointerException("Arguments cannot be null"))
+                .when(pokedexFactory)
+                .createPokedex(null, null);
+
+        // Vérifie que l'exception est levée
+        assertThrows(NullPointerException.class, () -> {
+            pokedexFactory.createPokedex(null, null);
+        });
+    }
+
+
 }

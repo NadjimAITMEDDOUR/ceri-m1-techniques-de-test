@@ -46,4 +46,13 @@ public class IPokemonMetadataProviderTest {
 
         assertThrows(PokedexException.class, () -> metadataProvider.getPokemonMetadata(999));
     }
+
+    @Test
+    void testGetPokemonMetadata_NullProvider() throws PokedexException {
+        IPokemonMetadataProvider nullProvider = null;
+        assertThrows(NullPointerException.class, () -> {
+            nullProvider.getPokemonMetadata(0);
+        });
+    }
+
 }
