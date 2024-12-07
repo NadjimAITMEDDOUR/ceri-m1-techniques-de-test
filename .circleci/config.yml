@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  test-java:  # Conserver le nom 'test-java'
+  test-java:  # Job pour exécuter les tests et générer la couverture de code
     docker:
       - image: cimg/openjdk:11.0  # Utilisez cimg/openjdk:8.0 si Java 8 est nécessaire
     steps:
@@ -12,38 +12,31 @@ jobs:
             find . -name 'pom.xml' -o -name 'gradlew*' -o -name '*.gradle*' | \
                     sort | xargs cat > /tmp/CIRCLECI_CACHE_KEY
       - restore_cache:
-          key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}
+          key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}  # Restaure le cache en utilisant le checksum
       - run:
           name: Run Maven Tests with Coverage
-          command: mvn verify
+          command: mvn verify  # Exécute les tests Maven avec JaCoCo
       - store_test_results:
-          path: target/surefire-reports
+          path: target/surefire-reports  # Sauvegarde les résultats des tests
       - store_artifacts:
-          path: target/site/jacoco
+          path: target/site/jacoco  # Sauvegarde le rapport de couverture généré par JaCoCo
       - save_cache:
-          key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}
+          key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}  # Sauvegarde le cache pour les dépendances Maven
           paths:
-            - ~/.m2/repository
+            - ~/.m2/repository  # Cache les dépendances Maven pour une exécution plus rapide
 
-      # Publish the JaCoCo report to Codecov
+      # Publier les rapports de couverture sur Codecov
       - run:
-          name: upload-to-codecov
+          name: Upload to Codecov
           command: |
-            curl -s https://codecov.io/bash > /tmp/codecov
-            bash /tmp/codecov
+            curl -s https://codecov.io/bash > /tmp/codecov  # Télécharge le script de Codecov
+            bash /tmp/codecov  # Exécute le script pour uploader les résultats de couverture
 
 workflows:
-  build-and-upload:
+  build-and-upload:  # Workflow pour construire, tester et uploader les résultats
     jobs:
-      - test-java:  # Référence le job 'test-java'
+      - test-java:  # Le job test-java s'exécute
           filters:
             branches:
               only:
-                - master
-      - upload-to-codecov:
-          requires:
-            - test-java
-          filters:
-            branches:
-              only:
-                - master
+                - master  # Exécute le job uniquement sur la branche master
