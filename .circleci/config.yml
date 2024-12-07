@@ -3,9 +3,9 @@ version: 2.1
 jobs:
   test-java:
     docker:
-      - image: cimg/openjdk:11.0  # Remplacez par cimg/openjdk:8.0 si Java 8 est nécessaire
+      - image: cimg/openjdk:11.0  # Utilisez cimg/openjdk:8.0 si Java 8 est nécessaire
     steps:
-      - checkout
+      - checkout  # Récupère le code source
       - run:
           name: Calculate cache key
           command: |-
@@ -14,20 +14,36 @@ jobs:
       - restore_cache:
           key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}
       - run:
-          name: Run Maven Tests
+          name: Run Maven Tests with Coverage
           command: mvn verify
       - store_test_results:
           path: target/surefire-reports
+      - store_artifacts:
+          path: target/site/jacoco
       - save_cache:
           key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}
           paths:
             - ~/.m2/repository
 
+      # Publish the JaCoCo report to Codecov
+      - run:
+          name: Upload coverage to Codecov
+          command: |
+            curl -s https://codecov.io/bash > /tmp/codecov
+            bash /tmp/codecov
+
 workflows:
-  build-and-test:
+  build-and-upload:
     jobs:
-      - test-java:
+      - build:
           filters:
             branches:
               only:
-                - master  # Exécute uniquement sur la branche master
+                - master
+      - upload-to-codecov:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
