@@ -5,6 +5,7 @@ package fr.univavignon.pokedex.api;
  * 
  * @author fv
  */
+
 public interface IPokemonFactory {
 
 	/**
