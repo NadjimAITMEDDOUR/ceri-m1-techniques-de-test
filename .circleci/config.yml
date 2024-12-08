@@ -61,6 +61,7 @@ jobs:
             # Pousser vers le dépôt GitHub
             git push https://NadjimAITMEDDOUR:$Token@github.com/NadjimAITMEDDOUR/ceri-m1-techniques-de-test.git $(git rev-parse --abbrev-ref HEAD)
 
+
   generate-javadoc: # Job pour générer la Javadoc
     docker:
       - image: cimg/openjdk:11.0
