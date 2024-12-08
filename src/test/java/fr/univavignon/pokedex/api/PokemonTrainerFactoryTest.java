@@ -7,31 +7,47 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PokemonTrainerFactoryTest {
 
-    private PokemonTrainerFactory trainerFactory;
+    private PokemonTrainerFactory pokemonTrainerFactory;
     private PokedexFactory pokedexFactory;
 
     @BeforeEach
     void setUp() {
-        trainerFactory = new PokemonTrainerFactory();
+        pokemonTrainerFactory = new PokemonTrainerFactory();
         pokedexFactory = new PokedexFactory();
     }
 
     @Test
-    void testCreateTrainer_ValidData() {
-        PokemonTrainer trainer = trainerFactory.createTrainer("Ash", Team.VALOR, pokedexFactory);
+    void testCreateTrainer_ValidArguments() {
+        PokemonTrainer trainer = pokemonTrainerFactory.createTrainer("Ash", Team.VALOR, pokedexFactory);
+
         assertNotNull(trainer);
         assertEquals("Ash", trainer.getName());
         assertEquals(Team.VALOR, trainer.getTeam());
         assertNotNull(trainer.getPokedex());
+        assertEquals(0, trainer.getPokedex().size());
     }
 
     @Test
     void testCreateTrainer_NullName() {
-        assertThrows(IllegalArgumentException.class, () -> trainerFactory.createTrainer(null, Team.VALOR, pokedexFactory));
+        assertThrows(IllegalArgumentException.class, () ->
+                pokemonTrainerFactory.createTrainer(null, Team.MYSTIC, pokedexFactory));
+    }
+
+    @Test
+    void testCreateTrainer_EmptyName() {
+        assertThrows(IllegalArgumentException.class, () ->
+                pokemonTrainerFactory.createTrainer("", Team.MYSTIC, pokedexFactory));
     }
 
     @Test
     void testCreateTrainer_NullTeam() {
-        assertThrows(NullPointerException.class, () -> trainerFactory.createTrainer("Ash", null, pokedexFactory));
+        assertThrows(NullPointerException.class, () ->
+                pokemonTrainerFactory.createTrainer("Brock", null, pokedexFactory));
+    }
+
+    @Test
+    void testCreateTrainer_NullPokedexFactory() {
+        assertThrows(NullPointerException.class, () ->
+                pokemonTrainerFactory.createTrainer("Misty", Team.INSTINCT, null));
     }
 }
