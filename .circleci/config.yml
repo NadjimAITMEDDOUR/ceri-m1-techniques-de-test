@@ -61,7 +61,7 @@ jobs:
             # Pousser vers le dépôt GitHub
             git push origin $(git rev-parse --abbrev-ref HEAD)
 
-  generate-javadoc:  # Job pour générer la Javadoc
+  generate-javadoc: # Job pour générer la Javadoc
     docker:
       - image: cimg/openjdk:11.0
     steps:
@@ -80,20 +80,20 @@ jobs:
           command: |
             # Create a temporary directory for Javadoc
             mkdir -p /tmp/javadoc
-
+            
             # Copy the generated Javadoc to the temporary directory
             cp -r target/site/apidocs/* /tmp/javadoc/
-
+            
             # Configure Git user details
             git config --global user.name "CircleCI Bot"
             git config --global user.email "circleci-bot@example.com"
-
-            # Clone the repository (replace 'username' and 'repository' with your actual GitHub username and repository name)
-            git clone --depth=1 https://github.com/NadjimAITMEDDOUR/ceri-m1-techniques-de-test.git /tmp/repo
-
+            
+            # Clone the repository using the GitHub token
+            git clone --depth=1 https://NadjimAITMEDDOUR:${GITHUB_TOKEN}@github.com/NadjimAITMEDDOUR/ceri-m1-techniques-de-test.git /tmp/repo
+            
             # Navigate into the repository's directory
             cd /tmp/repo
-
+            
             # Check if the gh-pages branch exists
             if git show-ref --verify --quiet refs/heads/gh-pages; then
               # If the gh-pages branch exists, check it out
@@ -102,19 +102,20 @@ jobs:
               # If the gh-pages branch does not exist, create it
               git checkout --orphan gh-pages
             fi
-
+            
             # Remove all existing files in the gh-pages branch
             rm -rf *
-
+            
             # Copy the new Javadoc files into the gh-pages branch
             cp -r /tmp/javadoc/* .
-
+            
             # Stage and commit the changes
             git add .
             git commit -m "Deploy Javadoc to GitHub Pages" || echo "No changes to commit"
-
+            
             # Push the changes to the gh-pages branch
-            git push origin gh-pages
+            git push https://NadjimAITMEDDOUR:${GITHUB_TOKEN}@github.com/NadjimAITMEDDOUR/ceri-m1-techniques-de-test.git gh-pages
+
 
 
 workflows:
