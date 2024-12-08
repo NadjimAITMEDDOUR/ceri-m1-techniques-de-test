@@ -3,14 +3,15 @@ version: 2.1
 jobs:
   test-java:  # Job pour exécuter les tests et générer la couverture de code
     docker:
-      - image: cimg/openjdk:11.0  # Utilisez cimg/openjdk:8.0 si Java 8 est nécessaire
+      - image: cimg/openjdk:11.0  # Utilisez cimg/openjdk:11.0
     steps:
       - checkout  # Récupère le code source
       - run:
-          name: Calculate cache key
-          command: |-
-            find . -name 'pom.xml' -o -name 'gradlew*' -o -name '*.gradle*' | \
-                    sort | xargs cat > /tmp/CIRCLECI_CACHE_KEY
+          name: Set JAVA_HOME
+          command: |
+            echo "Setting JAVA_HOME"
+            export JAVA_HOME=/usr/local/openjdk-11  # Assurez-vous que le chemin correspond au JDK
+            echo "JAVA_HOME=$JAVA_HOME"
       - restore_cache:
           key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}  # Restaure le cache en utilisant le checksum
       - run:
@@ -65,6 +66,12 @@ jobs:
       - image: cimg/openjdk:11.0
     steps:
       - checkout
+      - run:
+          name: Set JAVA_HOME
+          command: |
+            echo "Setting JAVA_HOME"
+            export JAVA_HOME=/usr/local/openjdk-11  # Assurez-vous que le chemin correspond au JDK
+            echo "JAVA_HOME=$JAVA_HOME"
       - run:
           name: Generate Javadoc
           command: mvn clean javadoc:aggregate  # Génère la Javadoc
