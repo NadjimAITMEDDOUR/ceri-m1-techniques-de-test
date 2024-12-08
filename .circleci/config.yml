@@ -58,8 +58,8 @@ jobs:
       - run:
           name: Commit Badge to Repo
           command: |
-            git config --global user.email "circleci-bot@example.com"
-            git config --global user.name "CircleCI Bot"
+            git config --global user.email "nadjimaitmeddour@gmail.com"
+            git config --global user.name "NadjimAITMEDDOUR"
             git add badges/checkstyle-badge.svg || echo "No changes to add"
             git commit -m "Update CheckStyle Badge [skip ci]" || echo "No changes to commit"
             git push origin $(git rev-parse --abbrev-ref HEAD) || echo "Nothing to push"
