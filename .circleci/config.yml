@@ -25,18 +25,18 @@ jobs:
           paths:
             - ~/.m2/repository
 
-  checkstyle:  # Nouveau job pour exécuter CheckStyle
+  checkstyle: # Job pour exécuter CheckStyle et générer un badge
     docker:
       - image: cimg/openjdk:11.0
     steps:
       - checkout
       - run:
           name: Run CheckStyle
-          command: mvn checkstyle:checkstyle
+          command: mvn checkstyle:checkstyle  # Exécute CheckStyle
       - store_artifacts:
-          path: target/site/checkstyle.html
+          path: target/site/checkstyle.html  # Sauvegarde le rapport CheckStyle HTML
       - store_artifacts:
-          path: target/checkstyle-result.xml
+          path: target/checkstyle-result.xml  # Sauvegarde le rapport CheckStyle XML
       - run:
           name: Generate CheckStyle Badge
           command: |
@@ -51,16 +51,17 @@ jobs:
                 <rect width="120" height="20" fill="'$COLOR'"/>
                 <text x="60" y="14" fill="#fff" font-size="11" text-anchor="middle">CheckStyle: '$ERRORS' Errors</text>
               </svg>' > badges/checkstyle-badge.svg
+              echo "Badge generated successfully."
             else
               echo "CheckStyle report not found. Skipping badge generation."
-              exit 1
+              exit 0
             fi
       - run:
           name: Commit Badge to Repo
           command: |
-            git config --global user.email "nadjimaitmeddour@gmail.com"
-            git config --global user.name "NadjimAITMEDDOUR"
-            git add badges/checkstyle-badge.svg || echo "No changes to add"
+            git config --global user.email "circleci-bot@example.com"
+            git config --global user.name "CircleCI Bot"
+            git add badges/checkstyle-badge.svg
             git commit -m "Update CheckStyle Badge [skip ci]" || echo "No changes to commit"
             git push origin $(git rev-parse --abbrev-ref HEAD) || echo "Nothing to push"
 
