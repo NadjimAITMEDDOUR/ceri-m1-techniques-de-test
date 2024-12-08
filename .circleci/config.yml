@@ -78,18 +78,44 @@ jobs:
       - run:
           name: Deploy Javadoc to GitHub Pages
           command: |
+            # Create a temporary directory for Javadoc
             mkdir -p /tmp/javadoc
+
+            # Copy the generated Javadoc to the temporary directory
             cp -r target/site/apidocs/* /tmp/javadoc/
+
+            # Configure Git user details
             git config --global user.name "CircleCI Bot"
             git config --global user.email "circleci-bot@example.com"
+
+            # Clone the repository (replace 'username' and 'repository' with your actual GitHub username and repository name)
             git clone --depth=1 https://github.com/NadjimAITMEDDOUR/ceri-m1-techniques-de-test.git /tmp/repo
+
+            # Navigate into the repository's directory
             cd /tmp/repo
-            git checkout gh-pages
+
+            # Check if the gh-pages branch exists
+            if git show-ref --verify --quiet refs/heads/gh-pages; then
+              # If the gh-pages branch exists, check it out
+              git checkout gh-pages
+            else
+              # If the gh-pages branch does not exist, create it
+              git checkout --orphan gh-pages
+            fi
+
+            # Remove all existing files in the gh-pages branch
             rm -rf *
+
+            # Copy the new Javadoc files into the gh-pages branch
             cp -r /tmp/javadoc/* .
+
+            # Stage and commit the changes
             git add .
             git commit -m "Deploy Javadoc to GitHub Pages" || echo "No changes to commit"
+
+            # Push the changes to the gh-pages branch
             git push origin gh-pages
+
 
 workflows:
   build-and-upload:  # Workflow pour construire, tester et uploader les résultats
