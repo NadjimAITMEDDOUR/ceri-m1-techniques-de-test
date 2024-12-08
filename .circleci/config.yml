@@ -120,7 +120,6 @@ jobs:
             git push https://NadjimAITMEDDOUR:$Token@github.com/NadjimAITMEDDOUR/ceri-m1-techniques-de-test.git gh-pages
 
 
-
 workflows:
   build-and-upload:  # Workflow pour construire, tester et uploader les résultats
     jobs:
