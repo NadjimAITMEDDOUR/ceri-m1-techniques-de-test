@@ -58,11 +58,11 @@ class PokedexTest {
         assertEquals(1, pokemons.size());
         assertThrows(UnsupportedOperationException.class, () -> pokemons.add(pokemon));
     }
-/*
+
     @Test
     void testGetPokemons_Sorted() {
-        Pokemon pokemon1 = pokemonFactory.createPokemon(0, 500, 60, 3000, 2);
-        Pokemon pokemon2 = pokemonFactory.createPokemon(1, 800, 80, 5000, 5);
+        Pokemon pokemon1 = pokemonFactory.createPokemon(0, 613, 64, 4000, 4);
+        Pokemon pokemon2 = pokemonFactory.createPokemon(133, 2729, 202, 5000, 4);
 
         pokedex.addPokemon(pokemon1);
         pokedex.addPokemon(pokemon2);
@@ -71,5 +71,5 @@ class PokedexTest {
         assertEquals(pokemon1, sortedPokemons.get(0));
         assertEquals(pokemon2, sortedPokemons.get(1));
     }
-     */
+
 }
