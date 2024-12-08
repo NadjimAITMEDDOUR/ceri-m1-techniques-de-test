@@ -41,7 +41,7 @@ jobs:
           name: Run CheckStyle
           command: mvn checkstyle:checkstyle  # Exécute le plugin CheckStyle
       - store_artifacts:
-          path: target/site/checkstyle.html  # Sauvegarde le rapport CheckStyle
+          path: target/site/checkstyle.html  # Sauvegarde le rapport CheckStyle HTML
       - store_artifacts:
           path: target/checkstyle-result.xml  # Sauvegarde le rapport CheckStyle XML
       - run:
@@ -55,7 +55,7 @@ jobs:
             git config --global user.email "circleci-bot@example.com"
             git config --global user.name "CircleCI Bot"
             # Ajouter les fichiers directement en forçant l'ajout malgré .gitignore
-            git add -f target/checkstyle-result.xml
+            git add -f checkstyle-reports/checkstyle-result.xml
             git commit -m "Add CheckStyle result [skip ci]" || echo "No changes to commit"
             # Pousser vers le dépôt GitHub
             git push origin $(git rev-parse --abbrev-ref HEAD)
