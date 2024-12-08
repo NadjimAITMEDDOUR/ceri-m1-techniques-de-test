@@ -32,7 +32,7 @@ jobs:
             curl -s https://codecov.io/bash > /tmp/codecov  # Télécharge le script de Codecov
             bash /tmp/codecov  # Exécute le script pour uploader les résultats de couverture
 
-  checkstyle:
+  checkstyle:  # Nouveau job pour exécuter CheckStyle
     docker:
       - image: cimg/openjdk:11.0
     steps:
@@ -41,32 +41,20 @@ jobs:
           name: Run CheckStyle
           command: mvn checkstyle:checkstyle  # Exécute le plugin CheckStyle
       - store_artifacts:
-          path: target/site/checkstyle.html  # Sauvegarde le rapport CheckStyle HTML
+          path: target/site/checkstyle.html  # Sauvegarde le rapport CheckStyle
       - store_artifacts:
           path: target/checkstyle-result.xml  # Sauvegarde le rapport CheckStyle XML
       - run:
-          name: Generate CheckStyle Badge
+          name: Push CheckStyle result to GitHub
           command: |
-            if [ -f target/checkstyle-result.xml ]; then
-              ERRORS=$(grep -o '<error ' target/checkstyle-result.xml | wc -l)  # Compte les erreurs
-              if [ "$ERRORS" -gt 0 ]; then
-                COLOR="red"
-              else
-                COLOR="brightgreen"
-              fi
-              # Crée le badge
-              curl -s https://img.shields.io/badge/CheckStyle-$ERRORS%20Errors-$COLOR > badges/checkstyle-badge.svg
-            else
-              echo "CheckStyle report not found. Skipping badge generation."
-            fi
-      - run:
-          name: Commit Badge to Repo
-          command: |
+            # Configurer Git pour permettre le push
             git config --global user.email "circleci-bot@example.com"
             git config --global user.name "CircleCI Bot"
-            git add badges/checkstyle-badge.svg
-            git commit -m "Update CheckStyle Badge [skip ci]" || echo "No changes to commit"
-            git push origin $(git rev-parse --abbrev-ref HEAD) || echo "Nothing to push"
+            # Ajouter les fichiers directement
+            git add target/checkstyle-result.xml
+            git commit -m "Add CheckStyle result [skip ci]" || echo "No changes to commit"
+            # Pousser vers le dépôt GitHub
+            git push origin $(git rev-parse --abbrev-ref HEAD)
 
 workflows:
   build-and-upload:  # Workflow pour construire, tester et uploader les résultats
