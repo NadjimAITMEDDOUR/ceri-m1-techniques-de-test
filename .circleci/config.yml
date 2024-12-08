@@ -32,6 +32,19 @@ jobs:
             curl -s https://codecov.io/bash > /tmp/codecov  # Télécharge le script de Codecov
             bash /tmp/codecov  # Exécute le script pour uploader les résultats de couverture
 
+  checkstyle:  # Nouveau job pour exécuter CheckStyle
+    docker:
+      - image: cimg/openjdk:11.0
+    steps:
+      - checkout
+      - run:
+          name: Run CheckStyle
+          command: mvn checkstyle:checkstyle  # Exécute le plugin CheckStyle
+      - store_artifacts:
+          path: target/site/checkstyle.html  # Sauvegarde le rapport CheckStyle
+      - store_artifacts:
+          path: target/checkstyle-result.xml  # Sauvegarde le rapport CheckStyle XML
+
 workflows:
   build-and-upload:  # Workflow pour construire, tester et uploader les résultats
     jobs:
@@ -40,3 +53,8 @@ workflows:
             branches:
               only:
                 - master  # Exécute le job uniquement sur la branche master
+      - checkstyle:  # Exécute le job CheckStyle
+          filters:
+            branches:
+              only:
+                - master
