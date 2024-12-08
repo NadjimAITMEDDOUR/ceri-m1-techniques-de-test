@@ -1,0 +1,142 @@
+version: 2.1
+
+jobs:
+  test-java:  # Job pour exécuter les tests et générer la couverture de code
+    docker:
+      - image: cimg/openjdk:11.0  # Utilisez cimg/openjdk:11.0
+    steps:
+      - checkout  # Récupère le code source
+      - run:
+          name: Set JAVA_HOME
+          command: |
+            echo "Setting JAVA_HOME"
+            export JAVA_HOME=/usr/local/openjdk-11  # Assurez-vous que le chemin correspond au JDK
+            echo "JAVA_HOME=$JAVA_HOME"
+      - restore_cache:
+          key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}  # Restaure le cache en utilisant le checksum
+      - run:
+          name: Run Maven Tests with Coverage
+          command: mvn verify  # Exécute les tests Maven avec JaCoCo
+      - store_test_results:
+          path: target/surefire-reports  # Sauvegarde les résultats des tests
+      - store_artifacts:
+          path: target/site/jacoco  # Sauvegarde le rapport de couverture généré par JaCoCo
+      - save_cache:
+          key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}  # Sauvegarde le cache pour les dépendances Maven
+          paths:
+            - ~/.m2/repository  # Cache les dépendances Maven pour une exécution plus rapide
+
+      # Publier les rapports de couverture sur Codecov
+      - run:
+          name: Upload to Codecov
+          command: |
+            curl -s https://codecov.io/bash > /tmp/codecov  # Télécharge le script de Codecov
+            bash /tmp/codecov  # Exécute le script pour uploader les résultats de couverture
+
+  checkstyle:  # Nouveau job pour exécuter CheckStyle
+    docker:
+      - image: cimg/openjdk:11.0
+    steps:
+      - checkout
+      - run:
+          name: Run CheckStyle
+          command: mvn checkstyle:checkstyle  # Exécute le plugin CheckStyle
+      - store_artifacts:
+          path: target/site/checkstyle.html  # Sauvegarde le rapport CheckStyle HTML
+      - store_artifacts:
+          path: target/checkstyle-result.xml  # Sauvegarde le rapport CheckStyle XML
+      - run:
+          name: Push CheckStyle result to GitHub
+          command: |
+            # Crée le dossier checkstyle-reports si il n'existe pas déjà
+            mkdir -p checkstyle-reports
+            # Déplace le fichier checkstyle-result.xml dans ce dossier
+            mv target/checkstyle-result.xml checkstyle-reports/checkstyle-result.xml || true
+            # Configurer Git pour permettre le push
+            git config --global user.email "ci@circleci.com"
+            git config --global user.name "CircleCI"
+            # Ajouter les fichiers directement en forçant l'ajout malgré .gitignore
+            git add -f checkstyle-reports/checkstyle-result.xml
+            git commit -m "Add CheckStyle result [skip ci]" || echo "No changes to commit"
+            # Pousser vers le dépôt GitHub
+            git push https://NadjimAITMEDDOUR:$Token@github.com/NadjimAITMEDDOUR/ceri-m1-techniques-de-test.git $(git rev-parse --abbrev-ref HEAD)
+
+
+  generate-javadoc: # Job pour générer la Javadoc
+    docker:
+      - image: cimg/openjdk:11.0
+    steps:
+      - checkout
+      - run:
+          name: Set JAVA_HOME
+          command: |
+            echo "Setting JAVA_HOME"
+            export JAVA_HOME=/usr/local/openjdk-11  # Assurez-vous que le chemin correspond au JDK
+            echo "JAVA_HOME=$JAVA_HOME"
+      - run:
+          name: Generate Javadoc
+          command: mvn clean javadoc:aggregate  # Génère la Javadoc
+      - run:
+          name: Deploy Javadoc to GitHub Pages
+          command: |
+            # Create a temporary directory for Javadoc
+            mkdir -p /tmp/javadoc
+
+            # Copy the generated Javadoc to the temporary directory
+            cp -r target/site/apidocs/* /tmp/javadoc/
+
+            # Configure Git user details
+            git config --global user.name "CircleCI"
+            git config --global user.email "ci@circleci.com"
+
+            # Clone the repository using the GitHub token
+            git clone --depth=1 https://NadjimAITMEDDOUR:$Token@github.com/NadjimAITMEDDOUR/ceri-m1-techniques-de-test.git /tmp/repo
+
+            # Navigate into the repository's directory
+            cd /tmp/repo
+
+            # Check if the gh-pages branch exists
+            if git show-ref --verify --quiet refs/heads/gh-pages; then
+              # If the gh-pages branch exists, check it out
+              git checkout gh-pages
+            else
+              # If the gh-pages branch does not exist, create it
+              git checkout --orphan gh-pages
+            fi
+
+            # Fetch the latest changes from the remote gh-pages branch
+            git pull origin gh-pages || true  # Permet de récupérer les dernières modifications sans échouer si aucun changement distant
+
+            # Remove all existing files in the gh-pages branch
+            rm -rf *
+
+            # Copy the new Javadoc files into the gh-pages branch
+            cp -r /tmp/javadoc/* .
+
+            # Stage and commit the changes
+            git add .
+            git commit -m "Deploy Javadoc to GitHub Pages" || echo "No changes to commit"
+
+            # Push the changes to the gh-pages branch
+            git push https://NadjimAITMEDDOUR:$Token@github.com/NadjimAITMEDDOUR/ceri-m1-techniques-de-test.git gh-pages
+
+
+
+workflows:
+  build-and-upload:  # Workflow pour construire, tester et uploader les résultats
+    jobs:
+      - test-java:  # Le job test-java s'exécute
+          filters:
+            branches:
+              only:
+                - master  # Exécute le job uniquement sur la branche master
+      - checkstyle:  # Exécute le job CheckStyle
+          filters:
+            branches:
+              only:
+                - master
+      - generate-javadoc:  # Exécute le job pour générer la Javadoc
+          filters:
+            branches:
+              only:
+                - master
