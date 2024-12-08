@@ -60,6 +60,30 @@ jobs:
             # Pousser vers le dépôt GitHub
             git push origin $(git rev-parse --abbrev-ref HEAD)
 
+  generate-javadoc:  # Job pour générer la Javadoc
+    docker:
+      - image: cimg/openjdk:11.0
+    steps:
+      - checkout
+      - run:
+          name: Generate Javadoc
+          command: mvn clean javadoc:aggregate  # Génère la Javadoc
+      - run:
+          name: Deploy Javadoc to GitHub Pages
+          command: |
+            mkdir -p /tmp/javadoc
+            cp -r target/site/apidocs/* /tmp/javadoc/
+            git config --global user.name "CircleCI Bot"
+            git config --global user.email "circleci-bot@example.com"
+            git clone --depth=1 https://github.com/your-username/your-repo.git /tmp/repo
+            cd /tmp/repo
+            git checkout gh-pages
+            rm -rf *
+            cp -r /tmp/javadoc/* .
+            git add .
+            git commit -m "Deploy Javadoc to GitHub Pages" || echo "No changes to commit"
+            git push origin gh-pages
+
 workflows:
   build-and-upload:  # Workflow pour construire, tester et uploader les résultats
     jobs:
@@ -69,6 +93,11 @@ workflows:
               only:
                 - master  # Exécute le job uniquement sur la branche master
       - checkstyle:  # Exécute le job CheckStyle
+          filters:
+            branches:
+              only:
+                - master
+      - generate-javadoc:  # Exécute le job pour générer la Javadoc
           filters:
             branches:
               only:
