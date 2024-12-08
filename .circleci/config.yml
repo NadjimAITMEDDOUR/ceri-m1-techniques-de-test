@@ -89,7 +89,7 @@ jobs:
             git config --global user.email "circleci-bot@example.com"
 
             # Clone the repository using HTTPS and token-based authentication
-            git clone --depth=1 https://<your-github-username>:${GITHUB_TOKEN}@github.com/NadjimAITMEDDOUR/ceri-m1-techniques-de-test.git /tmp/repo
+            git clone --depth=1 https://NadjimAITMEDDOUR:${GITHUB_TOKEN}@github.com/NadjimAITMEDDOUR/ceri-m1-techniques-de-test.git /tmp/repo
 
             # Navigate into the repository's directory
             cd /tmp/repo
@@ -114,7 +114,7 @@ jobs:
             git commit -m "Deploy Javadoc to GitHub Pages" || echo "No changes to commit"
 
             # Push the changes to the gh-pages branch using the token
-            git push https://<your-github-username>:${GITHUB_TOKEN}@github.com/NadjimAITMEDDOUR/ceri-m1-techniques-de-test.git gh-pages
+            git push https://NadjimAITMEDDOUR:${GITHUB_TOKEN}@github.com/NadjimAITMEDDOUR/ceri-m1-techniques-de-test.git gh-pages
 
 
 workflows:
