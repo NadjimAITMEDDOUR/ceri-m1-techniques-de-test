@@ -3,34 +3,27 @@ version: 2.1
 jobs:
   test-java:  # Job pour exécuter les tests et générer la couverture de code
     docker:
-      - image: cimg/openjdk:11.0  # Utilisez cimg/openjdk:8.0 si Java 8 est nécessaire
+      - image: cimg/openjdk:11.0
     steps:
-      - checkout  # Récupère le code source
+      - checkout
       - run:
           name: Calculate cache key
           command: |-
             find . -name 'pom.xml' -o -name 'gradlew*' -o -name '*.gradle*' | \
                     sort | xargs cat > /tmp/CIRCLECI_CACHE_KEY
       - restore_cache:
-          key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}  # Restaure le cache en utilisant le checksum
+          key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}
       - run:
           name: Run Maven Tests with Coverage
-          command: mvn verify  # Exécute les tests Maven avec JaCoCo
+          command: mvn verify
       - store_test_results:
-          path: target/surefire-reports  # Sauvegarde les résultats des tests
+          path: target/surefire-reports
       - store_artifacts:
-          path: target/site/jacoco  # Sauvegarde le rapport de couverture généré par JaCoCo
+          path: target/site/jacoco
       - save_cache:
-          key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}  # Sauvegarde le cache pour les dépendances Maven
+          key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}
           paths:
-            - ~/.m2/repository  # Cache les dépendances Maven pour une exécution plus rapide
-
-      # Publier les rapports de couverture sur Codecov
-      - run:
-          name: Upload to Codecov
-          command: |
-            curl -s https://codecov.io/bash > /tmp/codecov  # Télécharge le script de Codecov
-            bash /tmp/codecov  # Exécute le script pour uploader les résultats de couverture
+            - ~/.m2/repository
 
   checkstyle:  # Nouveau job pour exécuter CheckStyle
     docker:
@@ -39,42 +32,47 @@ jobs:
       - checkout
       - run:
           name: Run CheckStyle
-          command: mvn checkstyle:checkstyle  # Exécute le plugin CheckStyle
+          command: mvn checkstyle:checkstyle
       - store_artifacts:
-          path: target/site/checkstyle.html  # Sauvegarde le rapport CheckStyle
+          path: target/site/checkstyle.html
       - store_artifacts:
-          path: target/checkstyle-result.xml  # Sauvegarde le rapport CheckStyle XML
+          path: target/checkstyle-result.xml
       - run:
           name: Generate CheckStyle Badge
           command: |
-            ERRORS=$(grep -o '<error ' target/checkstyle-result.xml | wc -l)
-            COLOR="brightgreen"
-            if [ "$ERRORS" -gt 0 ]; then
-              COLOR="red"
+            if [ -f target/checkstyle-result.xml ]; then
+              ERRORS=$(grep -o '<error ' target/checkstyle-result.xml | wc -l)
+              COLOR="brightgreen"
+              if [ "$ERRORS" -gt 0 ]; then
+                COLOR="red"
+              fi
+              mkdir -p badges
+              echo '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="20">
+                <rect width="120" height="20" fill="'$COLOR'"/>
+                <text x="60" y="14" fill="#fff" font-size="11" text-anchor="middle">CheckStyle: '$ERRORS' Errors</text>
+              </svg>' > badges/checkstyle-badge.svg
+            else
+              echo "CheckStyle report not found. Skipping badge generation."
+              exit 1
             fi
-            mkdir -p badges
-            echo '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="20">
-              <rect width="120" height="20" fill="'$COLOR'"/>
-              <text x="60" y="14" fill="#fff" font-size="11" text-anchor="middle">CheckStyle: '$ERRORS' Errors</text>
-            </svg>' > badges/checkstyle-badge.svg
       - run:
           name: Commit Badge to Repo
           command: |
             git config --global user.email "circleci-bot@example.com"
             git config --global user.name "CircleCI Bot"
-            git add badges/checkstyle-badge.svg
+            git add badges/checkstyle-badge.svg || echo "No changes to add"
             git commit -m "Update CheckStyle Badge [skip ci]" || echo "No changes to commit"
             git push origin $(git rev-parse --abbrev-ref HEAD) || echo "Nothing to push"
 
 workflows:
-  build-and-upload:  # Workflow pour construire, tester et uploader les résultats
+  build-and-upload:
     jobs:
-      - test-java:  # Le job test-java s'exécute
+      - test-java:
           filters:
             branches:
               only:
-                - master  # Exécute le job uniquement sur la branche master
-      - checkstyle:  # Exécute le job CheckStyle
+                - master
+      - checkstyle:
           filters:
             branches:
               only:
