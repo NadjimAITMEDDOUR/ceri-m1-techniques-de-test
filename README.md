@@ -13,7 +13,8 @@
 
 ![CircleCI](https://circleci.com/gh/NadjimAITMEDDOUR/ceri-m1-techniques-de-test.svg?style=shield)  
 ![Coverage](https://codecov.io/gh/NadjimAITMEDDOUR/ceri-m1-techniques-de-test/branch/master/graph/badge.svg)
-![CheckStyle Badge](https://img.shields.io/endpoint?url=https://NadjimAITMEDDOUR:$Token@github.com/NadjimAITMEDDOUR//ceri-m1-techniques-de-test/blob/master/checkstyle-reports/checkstyle-result.xml)
+![CheckStyle Badge](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/NadjimAITMEDDOUR/ceri-m1-techniques-de-test/master/checkstyle-reports/checkstyle-result.xml)
+
 
 
 ---
