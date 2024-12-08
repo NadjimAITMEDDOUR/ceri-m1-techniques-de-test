@@ -47,11 +47,15 @@ jobs:
       - run:
           name: Push CheckStyle result to GitHub
           command: |
+            # Crée le dossier checkstyle-reports si il n'existe pas déjà
+            mkdir -p checkstyle-reports
+            # Déplace le fichier checkstyle-result.xml dans ce dossier
+            mv target/checkstyle-result.xml checkstyle-reports/checkstyle-result.xml || true
             # Configurer Git pour permettre le push
             git config --global user.email "circleci-bot@example.com"
             git config --global user.name "CircleCI Bot"
-            # Ajouter les fichiers directement
-            git add target/checkstyle-result.xml
+            # Ajouter les fichiers directement en forçant l'ajout malgré .gitignore
+            git add -f target/checkstyle-result.xml
             git commit -m "Add CheckStyle result [skip ci]" || echo "No changes to commit"
             # Pousser vers le dépôt GitHub
             git push origin $(git rev-parse --abbrev-ref HEAD)
