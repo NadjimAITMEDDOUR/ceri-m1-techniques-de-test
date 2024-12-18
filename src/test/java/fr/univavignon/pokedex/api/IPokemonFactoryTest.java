@@ -16,6 +16,7 @@ public class IPokemonFactoryTest {
         pokemonFactory = new RocketPokemonFactory();
     }
 
+
     @Test
     void testCreatePokemon_ValidData() {
         // Test avec un index mappé
