@@ -5,7 +5,6 @@ package fr.univavignon.pokedex.api;
  * 
  * @author fv
  */
-
 public final class Pokemon extends PokemonMetadata {
 
 	/** Combat Point of the pokemon. **/
