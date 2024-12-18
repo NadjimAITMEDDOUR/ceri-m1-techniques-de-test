@@ -12,39 +12,52 @@ public class IPokemonFactoryTest {
 
     @BeforeEach
     void setUp() {
-        pokemonFactory = mock(IPokemonFactory.class);
-
-        // Configuration des mocks pour deux Pokémons
-        when(pokemonFactory.createPokemon(0, 613, 64, 4000, 4))
-                .thenReturn(new Pokemon(0, "Bulbizarre", 126, 126, 90, 613, 64, 4000, 4, 56.0));
-        when(pokemonFactory.createPokemon(133, 2729, 202, 5000, 4))
-                .thenReturn(new Pokemon(133, "Aquali", 186, 168, 260, 2729, 202, 5000, 4, 100.0));
+        // Utilisation de la classe réelle RocketPokemonFactory
+        pokemonFactory = new RocketPokemonFactory();
     }
 
     @Test
     void testCreatePokemon_ValidData() {
-        Pokemon bulbizarre = pokemonFactory.createPokemon(0, 613, 64, 4000, 4);
-        assertNotNull(bulbizarre);
-        assertEquals(0, bulbizarre.getIndex());
-        assertEquals("Bulbizarre", bulbizarre.getName());
-        assertEquals(126, bulbizarre.getAttack());
-        assertEquals(613, bulbizarre.getCp());
+        // Test avec un index mappé
+        Pokemon mappedPokemon = pokemonFactory.createPokemon(1, 613, 64, 4000, 4);
+        assertNotNull(mappedPokemon);
+        assertEquals(1, mappedPokemon.getIndex());
+        assertEquals("Bulbasaur", mappedPokemon.getName()); // Correspond à l'index 1 mappé dans RocketPokemonFactory
+        assertTrue(mappedPokemon.getAttack() >= 0 && mappedPokemon.getAttack() <= 100); // Vérifie les plages des stats générées
+        assertTrue(mappedPokemon.getDefense() >= 0 && mappedPokemon.getDefense() <= 100);
+        assertTrue(mappedPokemon.getStamina() >= 0 && mappedPokemon.getStamina() <= 100);
+        assertEquals(613, mappedPokemon.getCp());
+        assertEquals(64, mappedPokemon.getHp());
+        assertEquals(4000, mappedPokemon.getDust());
+        assertEquals(4, mappedPokemon.getCandy());
 
-        Pokemon aquali = pokemonFactory.createPokemon(133, 2729, 202, 5000, 4);
-        assertNotNull(aquali);
-        assertEquals(133, aquali.getIndex());
-        assertEquals("Aquali", aquali.getName());
-        assertEquals(2729, aquali.getCp());
+        // Test avec un index non mappé
+        Pokemon unmappedPokemon = pokemonFactory.createPokemon(133, 2729, 202, 5000, 4);
+        assertNotNull(unmappedPokemon);
+        assertEquals(133, unmappedPokemon.getIndex());
+        assertEquals("MISSINGNO", unmappedPokemon.getName()); // Nom par défaut pour un index non mappé
+        assertTrue(unmappedPokemon.getAttack() >= 0 && unmappedPokemon.getAttack() <= 100); // Vérifie les plages des stats générées
+        assertTrue(unmappedPokemon.getDefense() >= 0 && unmappedPokemon.getDefense() <= 100);
+        assertTrue(unmappedPokemon.getStamina() >= 0 && unmappedPokemon.getStamina() <= 100);
+        assertEquals(2729, unmappedPokemon.getCp());
+        assertEquals(202, unmappedPokemon.getHp());
+        assertEquals(5000, unmappedPokemon.getDust());
+        assertEquals(4, unmappedPokemon.getCandy());
     }
 
     @Test
     void testCreatePokemon_InvalidData() {
-        when(pokemonFactory.createPokemon(anyInt(), anyInt(), anyInt(), anyInt(), anyInt()))
-                .thenThrow(new IllegalArgumentException("Invalid data"));
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            pokemonFactory.createPokemon(-1, -100, -50, -4000, -1);
-        });
+        // Test avec un index invalide (négatif)
+        Pokemon invalidPokemon = pokemonFactory.createPokemon(-1, -100, -50, -4000, -1);
+        assertNotNull(invalidPokemon);
+        assertEquals(-1, invalidPokemon.getIndex());
+        assertEquals("Ash's Pikachu", invalidPokemon.getName()); // Nom par défaut pour un index négatif
+        assertEquals(1000, invalidPokemon.getAttack()); // Stats fixes pour un index négatif
+        assertEquals(1000, invalidPokemon.getDefense());
+        assertEquals(1000, invalidPokemon.getStamina());
+        assertEquals(-100, invalidPokemon.getCp());
+        assertEquals(-50, invalidPokemon.getHp());
+        assertEquals(-4000, invalidPokemon.getDust());
+        assertEquals(-1, invalidPokemon.getCandy());
     }
-
 }
