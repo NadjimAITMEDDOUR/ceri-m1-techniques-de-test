@@ -30,6 +30,8 @@
 </file>
 <file name="/home/circleci/project/src/main/java/fr/univavignon/pokedex/api/PokemonTrainerFactory.java">
 </file>
+<file name="/home/circleci/project/src/main/java/fr/univavignon/pokedex/api/RocketPokemonFactory.java">
+</file>
 <file name="/home/circleci/project/src/main/java/fr/univavignon/pokedex/api/Team.java">
 </file>
 </checkstyle>
